@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard WOW Dinâmico — Vendas Porsche</title>
+
+  <style>
+    :root {
+      --bg: #050608;
+      --panel: rgba(255, 255, 255, 0.075);
+      --panel-2: rgba(255, 255, 255, 0.105);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #f8fafc;
+      --muted: #9ca3af;
+      --muted-2: #cbd5e1;
+      --gold: #d6a84f;
+      --gold-2: #f4cc75;
+      --red: #ef4444;
+      --green: #22c55e;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+      --cyan: #22d3ee;
+      --amber: #f59e0b;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
+      --radius: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 8%, rgba(214, 168, 79, 0.22), transparent 28%),
+        radial-gradient(circle at 90% 16%, rgba(96, 165, 250, 0.16), transparent 26%),
+        radial-gradient(circle at 52% 100%, rgba(167, 139, 250, 0.14), transparent 34%),
+        linear-gradient(180deg, #030407 0%, #0b0f17 48%, #050608 100%);
+      min-height: 100vh;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image:
+        linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.15) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: radial-gradient(circle at center, black, transparent 75%);
+    }
+
+    .wrap {
+      width: min(1460px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 30px 0 60px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 34px;
+      border: 1px solid var(--line);
+      padding: 38px;
+      min-height: 390px;
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035)),
+        linear-gradient(135deg, rgba(214,168,79,0.18), transparent 52%);
+      backdrop-filter: blur(22px);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 460px;
+      height: 460px;
+      right: -130px;
+      top: -150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(214,168,79,0.35), transparent 62%);
+    }
+
+    .hero::after {
+      content: "911";
+      position: absolute;
+      right: 34px;
+      bottom: -52px;
+      font-size: 210px;
+      font-weight: 950;
+      letter-spacing: -0.12em;
+      color: rgba(255,255,255,0.035);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--gold-2);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 44px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-2));
+    }
+
+    h1 {
+      position: relative;
+      z-index: 2;
+      max-width: 980px;
+      margin: 0;
+      font-size: clamp(42px, 6vw, 82px);
+      line-height: 0.88;
+      letter-spacing: -0.075em;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: 22px 0 0;
+      color: var(--muted-2);
+      font-size: 16px;
+    }
+
+    .hero-actions {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 11px 15px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 850;
+      transition: 0.22s ease;
+    }
+
+    .btn:hover,
+    .btn.active {
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      color: #17120a;
+      border-color: rgba(244, 204, 117, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .top-meta {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .meta-card,
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.26);
+    }
+
+    .meta-card {
+      padding: 16px;
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+    }
+
+    .meta-value {
+      margin-top: 8px;
+      font-size: 26px;
+      font-weight: 950;
+      letter-spacing: -0.045em;
+    }
+
+    .meta-note {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 24px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border: 1px solid rgba(214,168,79,0.35);
+      background: rgba(214,168,79,0.14);
+      color: #fde68a;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--muted-2);
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 850;
+      font-size: 12px;
+      transition: 0.2s ease;
+    }
+
+    .tab.active {
+      color: #17120a;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      border-color: rgba(244,204,117,0.75);
+    }
+
+    .chart-box {
+      position: relative;
+      height: 340px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .insight-card {
+      border: 1px solid rgba(214,168,79,0.32);
+      background: linear-gradient(135deg, rgba(214,168,79,0.14), rgba(255,255,255,0.04));
+      border-radius: 22px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .insight-card strong {
+      color: var(--gold-2);
+      display: block;
+      margin-bottom: 7px;
+    }
+
+    .insight-card span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .kpi-ring {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .ring {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        conic-gradient(var(--gold-2) 0deg 148deg, rgba(255,255,255,0.1) 148deg 360deg);
+      box-shadow: inset 0 0 0 1px var(--line), 0 20px 45px rgba(0,0,0,0.35);
+      position: relative;
+    }
+
+    .ring::after {
+      content: "";
+      position: absolute;
+      width: 126px;
+      height: 126px;
+      border-radius: 50%;
+      background: #0b0f17;
+      border: 1px solid var(--line);
+    }
+
+    .ring span {
+      position: relative;
+      z-index: 2;
+      font-size: 28px;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+    }
+
+    .ring-copy h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .ring-copy p {
+      margin: 0;
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .matrix {
+      display: grid;
+      gap: 10px;
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 70px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .matrix-label {
+      color: var(--muted-2);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .track {
+      height: 11px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+      transition: width 900ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .fill.green { background: linear-gradient(90deg, #15803d, var(--green)); }
+    .fill.red { background: linear-gradient(90deg, #b91c1c, var(--red)); }
+    .fill.blue { background: linear-gradient(90deg, #2563eb, var(--blue)); }
+    .fill.purple { background: linear-gradient(90deg, #6d28d9, var(--purple)); }
+    .fill.cyan { background: linear-gradient(90deg, #0891b2, var(--cyan)); }
+    .fill.amber { background: linear-gradient(90deg, #b45309, var(--amber)); }
+
+    .matrix-value {
+      text-align: right;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.09);
+      color: #e5e7eb;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 900;
+    }
+
+    .status {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .status.green {
+      background: rgba(34,197,94,0.14);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.27);
+    }
+
+    .status.amber {
+      background: rgba(245,158,11,0.14);
+      color: #fde68a;
+      border: 1px solid rgba(245,158,11,0.27);
+    }
+
+    .status.red {
+      background: rgba(239,68,68,0.14);
+      color: #fecaca;
+      border: 1px solid rgba(239,68,68,0.27);
+    }
+
+    .story {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .story:last-child {
+      border-bottom: none;
+    }
+
+    .story-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: rgba(214,168,79,0.15);
+      color: var(--gold-2);
+      font-weight: 950;
+    }
+
+    .story strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .story span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.045);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    @media (max-width: 1100px) {
+      .top-meta,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 28px;
+      }
+
+      .kpi-ring {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-box {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="noise"></div>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Boardroom Dynamic Experience</div>
+
+      <h1>Performance Porsche em Modo Executivo</h1>
+
+      <p>
+        Uma visão premium e dinâmica da operação comercial: receita, pipeline, mix de modelos,
+        risco operacional, qualidade dos dados e prioridades para decisão.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn active" onclick="setMode('revenue', this)">Visão Receita</button>
+        <button class="btn" onclick="setMode('volume', this)">Visão Volume</button>
+        <button class="btn" onclick="setMode('risk', this)">Visão Risco</button>
+      </div>
+
+      <div class="top-meta">
+        <div class="meta-card">
+          <div class="meta-label">Receita total</div>
+          <div class="meta-value" data-counter="12827800.5" data-prefix="US$ " data-format="moneyShort">0</div>
+          <div class="meta-note">100 registros brutos</div>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-label">Ticket médio</div>
+          <div class="meta-value" data-counter="128278" data-prefix="US$ " data-format="moneyShort">0</div>
+          <div class="meta-note">Média da base</div>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-label">Entregues</div>
+          <div class="meta-value" data-counter="41" data-suffix="%">0</div>
+          <div class="meta-note">41 vendas Delivered</div>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-label">Pipeline aberto</div>
+          <div class="meta-value" data-counter="7120000" data-prefix="US$ " data-format="moneyShort">0</div>
+          <div class="meta-note">52 registros em aberto</div>
+        </div>
+
+        <div class="meta-card">
+          <div class="meta-label">Datas inválidas</div>
+          <div class="meta-value" data-counter="24" data-suffix="%">0</div>
+          <div class="meta-note">Gargalo analítico</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid grid-2">
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2 id="mainChartTitle">Mix de Modelos por Receita</h2>
+            <div class="subtitle" id="mainChartSubtitle">Famílias Porsche agrupadas pela contribuição financeira.</div>
+          </div>
+          <span class="badge" id="mainChartBadge">Receita</span>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="switchDataset('models', this)">Modelos</button>
+          <button class="tab" onclick="switchDataset('status', this)">Status</button>
+          <button class="tab" onclick="switchDataset('years', this)">Tempo</button>
+          <button class="tab" onclick="switchDataset('payments', this)">Pagamento</button>
+          <button class="tab" onclick="switchDataset('states', this)">Estados</button>
+        </div>
+
+        <div class="chart-box">
+          <canvas id="mainChart"></canvas>
+        </div>
+
+        <div class="insight-card">
+          <strong id="dynamicInsightTitle">Insight executivo</strong>
+          <span id="dynamicInsightText">
+            A família 911 concentra o maior valor financeiro, indicando forte dependência do mix premium.
+          </span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Radar de Saúde Operacional</h2>
+            <div class="subtitle">Quanto mais alto, mais atenção executiva.</div>
+          </div>
+          <span class="badge">Risk Radar</span>
+        </div>
+
+        <div class="chart-box">
+          <canvas id="radarChart"></canvas>
+        </div>
+
+        <div class="kpi-ring">
+          <div class="ring">
+            <span>59%</span>
+          </div>
+
+          <div class="ring-copy">
+            <h3>Índice de atenção operacional</h3>
+            <p>
+              Combina pipeline aberto, datas inválidas, cancelamentos e dependência de mix.
+              Não é um score estatístico; é um painel executivo de priorização.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid grid-3">
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Status Operacional</h2>
+            <div class="subtitle">Distribuição dos 100 registros.</div>
+          </div>
+        </div>
+
+        <div class="matrix" id="statusMatrix"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Alavancas Executivas</h2>
+            <div class="subtitle">Onde a gestão deve mirar primeiro.</div>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">1</div>
+          <div>
+            <strong>Fechar o que já está vendido</strong>
+            <span>US$ 7,12 mi estão em pipeline aberto. A operação pode capturar valor antes de buscar apenas mais volume.</span>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">2</div>
+          <div>
+            <strong>Blindar a análise temporal</strong>
+            <span>24% de datas inválidas comprometem forecast, aging e sazonalidade. É o “freio de mão puxado” dos dados.</span>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">3</div>
+          <div>
+            <strong>Gerenciar o mix 911 como ativo estratégico</strong>
+            <span>33,3% da receita vem da família 911. Poucas decisões ruins nesse mix fazem bastante barulho no caixa.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Qualidade da Base</h2>
+            <div class="subtitle">Auditoria rápida para diretoria.</div>
+          </div>
+        </div>
+
+        <div class="matrix">
+          <div class="matrix-row">
+            <div class="matrix-label">sale_id único</div>
+            <div class="track"><div class="fill green" data-width="100"></div></div>
+            <div class="matrix-value">100%</div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-label">Datas válidas</div>
+            <div class="track"><div class="fill blue" data-width="76"></div></div>
+            <div class="matrix-value">76%</div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-label">Preço válido</div>
+            <div class="track"><div class="fill green" data-width="100"></div></div>
+            <div class="matrix-value">100%</div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-label">Status válido</div>
+            <div class="track"><div class="fill green" data-width="100"></div></div>
+            <div class="matrix-value">100%</div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-label">Vendedor limpo</div>
+            <div class="track"><div class="fill red" data-width="0"></div></div>
+            <div class="matrix-value">0%</div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <strong>Diagnóstico</strong>
+          <span>
+            A base é boa para visão financeira e operacional, mas ainda fraca para ranking comercial e análise temporal profunda.
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid grid-2">
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Top Transações</h2>
+            <div class="subtitle">Clique nos cabeçalhos para ordenar.</div>
+          </div>
+          <span class="badge">Sortable</span>
+        </div>
+
+        <table id="dealsTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable('id')">sale_id</th>
+              <th onclick="sortTable('model')">Modelo</th>
+              <th class="num" onclick="sortTable('price')">Preço</th>
+              <th onclick="sortTable('status')">Status</th>
+              <th onclick="sortTable('date')">Data</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Plano de Ação Dinâmico</h2>
+            <div class="subtitle">Priorização objetiva para a próxima reunião.</div>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">A</div>
+          <div>
+            <strong>Curto prazo: saneamento temporal</strong>
+            <span>Corrigir 24 registros com data inválida e bloquear novas entradas inconsistentes.</span>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">B</div>
+          <div>
+            <strong>Curto prazo: war room de pipeline</strong>
+            <span>Revisar semanalmente os 52 registros abertos por status, valor e risco de atraso.</span>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">C</div>
+          <div>
+            <strong>Médio prazo: tabela-mestre comercial</strong>
+            <span>Criar ID único de vendedor para permitir ranking confiável e análise de produtividade.</span>
+          </div>
+        </div>
+
+        <div class="story">
+          <div class="story-icon">D</div>
+          <div>
+            <strong>Próxima camada: margem</strong>
+            <span>Adicionar custo, desconto, comissão e margem. Receita impressiona; margem decide.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Dashboard dinâmico gerado com base nos campos sanitizados disponíveis: SaleDateSanitized,
+      PorscheModelSanitized, SalesPriceSanitized, PayMethodSanitized, StateSanitized e DeliveryStatusSanitized.
+    </footer>
+  </main>
+
+  <script>
+    const data = {
+      models: {
+        title: "Mix de Modelos por Receita",
+        subtitle: "Famílias Porsche agrupadas pela contribuição financeira.",
+        badge: "Receita",
+        insightTitle: "Insight executivo",
+        insightText: "A família 911 concentra 33,3% da receita total. É a estrela do grid — e também o maior ponto de sensibilidade do mix.",
+        labels: ["911", "Taycan", "Cayenne", "Panamera", "Macan", "718"],
+        revenue: [4272700, 2334701, 2078650, 1498450, 1338350, 1304950],
+        volume: [23, 16, 18, 14, 17, 12]
+      },
+      status: {
+        title: "Status Operacional",
+        subtitle: "Distribuição da carteira por estágio operacional.",
+        badge: "Status",
+        insightTitle: "Sinal crítico",
+        insightText: "O pipeline aberto supera a receita entregue. Aqui pode existir mais valor destravável do que parece à primeira vista.",
+        labels: ["Delivered", "Pending", "In Transit", "Cancelled", "Awaiting", "Outros"],
+        revenue: [5080000, 2320000, 2100000, 625250, 900000, 1800000],
+        volume: [41, 17, 15, 7, 5, 15]
+      },
+      years: {
+        title: "Evolução Temporal",
+        subtitle: "Somente registros com data válida.",
+        badge: "Tempo",
+        insightTitle: "Ponto de atenção",
+        insightText: "2026 aparece como o ano mais forte da base válida, mas 24 datas inválidas impedem leitura temporal definitiva.",
+        labels: ["2024", "2025", "2026", "2027"],
+        revenue: [1440000, 2170000, 3900000, 1980000],
+        volume: [11, 19, 31, 15]
+      },
+      payments: {
+        title: "Métodos de Pagamento",
+        subtitle: "Distribuição por PayMethodSanitized.",
+        badge: "Pagamento",
+        insightTitle: "Leitura financeira",
+        insightText: "Wire Transfer lidera em volume. O processo financeiro deve tratar esse método como trilha prioritária de controle.",
+        labels: ["Wire", "Credit", "Financing", "Cash", "Bank", "Lease", "Outros"],
+        revenue: [3300000, 1900000, 1650000, 1500000, 1280000, 1200000, 1997800],
+        volume: [26, 15, 13, 12, 10, 10, 14]
+      },
+      states: {
+        title: "Geografia por Receita",
+        subtitle: "Top estados observados na base.",
+        badge: "Estados",
+        insightTitle: "Concentração geográfica",
+        insightText: "TX e CA lideram a base. Antes de escalar ações nacionais, vale entender se o motor é volume, ticket ou mix.",
+        labels: ["TX", "CA", "AZ", "FL", "NC"],
+        revenue: [2020000, 1970000, 695950, 566600, 510100],
+        volume: [14, 16, 7, 6, 5]
+      }
+    };
+
+    const statusRows = [
+      ["Delivered", 41, "green"],
+      ["Pending", 17, "amber"],
+      ["In Transit", 15, "blue"],
+      ["Cancelled", 7, "red"],
+      ["Awaiting", 5, "purple"],
+      ["Outros", 15, "cyan"]
+    ];
+
+    const deals = [
+      { id: 47, model: "911 GT3 RS", price: 286500, status: "Pending", date: "Invalid" },
+      { id: 105, model: "911 Dakar", price: 271700, status: "Delivered", date: "2027-10-01" },
+      { id: 28, model: "911 Dakar", price: 270000, status: "Awaiting Pickup", date: "Invalid" },
+      { id: 60, model: "911 Dakar", price: 268900, status: "Delivered", date: "2026-04-21" },
+      { id: 92, model: "911 Turbo S", price: 249300, status: "Awaiting Delivery", date: "2027-04-02" }
+    ];
+
+    let currentDataset = "models";
+    let currentMode = "revenue";
+    let sortDirection = 1;
+
+    const colors = ["#f4cc75", "#a78bfa", "#22c55e", "#60a5fa", "#f59e0b", "#22d3ee", "#ef4444"];
+
+    function formatMoneyShort(value) {
+      if (value >= 1000000) return "US$ " + (value / 1000000).toFixed(2).replace(".", ",") + " mi";
+      if (value >= 1000) return "US$ " + (value / 1000).toFixed(1).replace(".", ",") + " mil";
+      return "US$ " + value.toLocaleString("pt-BR");
+    }
+
+    function formatMoney(value) {
+      return "US$ " + value.toLocaleString("pt-BR", {
+        maximumFractionDigits: 0
+      });
+    }
+
+    function animateCounters() {
+      document.querySelectorAll("[data-counter]").forEach(el => {
+        const target = Number(el.dataset.counter);
+        const suffix = el.dataset.suffix || "";
+        const prefix = el.dataset.prefix || "";
+        const format = el.dataset.format;
+        const duration = 1200;
+        const start = performance.now();
+
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = target * eased;
+
+          if (format === "moneyShort") {
+            el.textContent = formatMoneyShort(value);
+          } else {
+            el.textContent = prefix + Math.round(value).toLocaleString("pt-BR") + suffix;
+          }
+
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+      });
+    }
+
+    function setMode(mode, btn) {
+      currentMode = mode;
+
+      document.querySelectorAll(".btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (mode === "risk") {
+        currentDataset = "status";
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab")[1].classList.add("active");
+      }
+
+      drawMainChart();
+      updateInsightByMode();
+    }
+
+    function switchDataset(key, btn) {
+      currentDataset = key;
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      btn.classList.add("active");
+      drawMainChart();
+    }
+
+    function drawMainChart() {
+      const canvas = document.getElementById("mainChart");
+      const ctx = canvas.getContext("2d");
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      ctx.scale(ratio, ratio);
+
+      const boxW = canvas.offsetWidth;
+      const boxH = canvas.offsetHeight;
+      ctx.clearRect(0, 0, boxW, boxH);
+
+      const d = data[currentDataset];
+      let metric = currentMode === "volume" ? d.volume : d.revenue;
+
+      if (currentMode === "risk") {
+        metric = d.volume;
+      }
+
+      document.getElementById("mainChartTitle").textContent = d.title;
+      document.getElementById("mainChartSubtitle").textContent = d.subtitle;
+      document.getElementById("mainChartBadge").textContent =
+        currentMode === "volume" ? "Volume" : currentMode === "risk" ? "Risco" : d.badge;
+
+      document.getElementById("dynamicInsightTitle").textContent = d.insightTitle;
+      document.getElementById("dynamicInsightText").textContent = d.insightText;
+
+      const max = Math.max(...metric);
+      const pad = 42;
+      const chartH = boxH - 86;
+      const barGap = 16;
+      const barW = (boxW - pad * 2 - barGap * (metric.length - 1)) / metric.length;
+
+      ctx.font = "12px Inter, Arial";
+      ctx.textAlign = "center";
+
+      metric.forEach((value, i) => {
+        const x = pad + i * (barW + barGap);
+        const h = (value / max) * chartH;
+        const y = boxH - 48 - h;
+
+        const grad = ctx.createLinearGradient(0, y, 0, boxH);
+        grad.addColorStop(0, colors[i % colors.length]);
+        grad.addColorStop(1, "rgba(255,255,255,0.08)");
+
+        roundRect(ctx, x, y, barW, h, 13, grad);
+
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillText(d.labels[i], x + barW / 2, boxH - 22);
+
+        ctx.fillStyle = "#f8fafc";
+        ctx.font = "bold 12px Inter, Arial";
+
+        const label = currentMode === "volume" || currentMode === "risk"
+          ? value.toLocaleString("pt-BR")
+          : formatMoneyShort(value).replace("US$ ", "");
+
+        ctx.fillText(label, x + barW / 2, y - 10);
+        ctx.font = "12px Inter, Arial";
+      });
+    }
+
+    function drawRadar() {
+      const canvas = document.getElementById("radarChart");
+      const ctx = canvas.getContext("2d");
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      ctx.scale(ratio, ratio);
+
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      const cx = w / 2;
+      const cy = h / 2 + 8;
+      const radius = Math.min(w, h) * 0.33;
+
+      const labels = ["Pipeline", "Datas", "Cancel.", "Mix 911", "Vendedor"];
+      const values = [82, 64, 28, 76, 70];
+
+      ctx.clearRect(0, 0, w, h);
+
+      for (let level = 5; level >= 1; level--) {
+        ctx.beginPath();
+
+        labels.forEach((_, i) => {
+          const angle = -Math.PI / 2 + i * 2 * Math.PI / labels.length;
+          const r = radius * level / 5;
+          const x = cx + Math.cos(angle) * r;
+          const y = cy + Math.sin(angle) * r;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+
+        ctx.closePath();
+        ctx.strokeStyle = "rgba(255,255,255,0.11)";
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+
+      values.forEach((v, i) => {
+        const angle = -Math.PI / 2 + i * 2 * Math.PI / labels.length;
+        const r = radius * v / 100;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      ctx.closePath();
+      ctx.fillStyle = "rgba(244,204,117,0.22)";
+      ctx.fill();
+      ctx.strokeStyle = "#f4cc75";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      labels.forEach((label, i) => {
+        const angle = -Math.PI / 2 + i * 2 * Math.PI / labels.length;
+        const x = cx + Math.cos(angle) * (radius + 34);
+        const y = cy + Math.sin(angle) * (radius + 34);
+
+        ctx.fillStyle = "#cbd5e1";
+        ctx.font = "bold 12px Inter, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(label, x, y);
+      });
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fillStyle) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x, y + h);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fillStyle = fillStyle;
+      ctx.fill();
+    }
+
+    function updateInsightByMode() {
+      const title = document.getElementById("dynamicInsightTitle");
+      const text = document.getElementById("dynamicInsightText");
+
+      if (currentMode === "revenue") {
+        title.textContent = "Modo Receita";
+        text.textContent = "Foco em valor financeiro. Ideal para priorizar modelos, estados e status com maior impacto no caixa.";
+      }
+
+      if (currentMode === "volume") {
+        title.textContent = "Modo Volume";
+        text.textContent = "Foco em quantidade de registros. Bom para entender capacidade operacional, frequência e carga de atendimento.";
+      }
+
+      if (currentMode === "risk") {
+        title.textContent = "Modo Risco";
+        text.textContent = "Foco em exposição operacional: pipeline aberto, datas inválidas e status pendentes ganham prioridade.";
+      }
+    }
+
+    function renderStatusMatrix() {
+      const root = document.getElementById("statusMatrix");
+
+      root.innerHTML = statusRows.map(row => {
+        const [label, value, color] = row;
+
+        return `
+          <div class="matrix-row">
+            <div class="matrix-label">${label}</div>
+            <div class="track">
+              <div class="fill ${color}" data-width="${value}"></div>
+            </div>
+            <div class="matrix-value">${value}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function animateBars() {
+      setTimeout(() => {
+        document.querySelectorAll(".fill").forEach(el => {
+          el.style.width = `${el.dataset.width || 0}%`;
+        });
+      }, 250);
+    }
+
+    function renderDeals(rows = deals) {
+      const tbody = document.querySelector("#dealsTable tbody");
+
+      tbody.innerHTML = rows.map(deal => {
+        const statusClass = deal.status === "Delivered" ? "green" :
+          deal.status === "Pending" ? "amber" :
+          deal.date === "Invalid" ? "red" : "amber";
+
+        return `
+          <tr>
+            <td>${deal.id}</td>
+            <td>${deal.model}</td>
+            <td class="num">${formatMoney(deal.price)}</td>
+            <td><span class="status ${statusClass}">${deal.status}</span></td>
+            <td>${deal.date === "Invalid" ? '<span class="status red">Invalid</span>' : deal.date}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function sortTable(key) {
+      const sorted = [...deals].sort((a, b) => {
+        if (typeof a[key] === "number") return (a[key] - b[key]) * sortDirection;
+        return String(a[key]).localeCompare(String(b[key])) * sortDirection;
+      });
+
+      sortDirection *= -1;
+      renderDeals(sorted);
+    }
+
+    window.addEventListener("resize", () => {
+      drawMainChart();
+      drawRadar();
+    });
+
+    window.addEventListener("load", () => {
+      animateCounters();
+      renderStatusMatrix();
+      renderDeals();
+      drawMainChart();
+      drawRadar();
+      animateBars();
+    });
+  </script>
+</body>
+</html>
